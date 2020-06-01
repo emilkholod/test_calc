@@ -105,7 +105,7 @@ const RulesAddingToExpression = (function() {
             if (out.length == 0) {
                 return false;
             }
-            return b && !checkLastType(out, BinaryOperators) && !checkLastType(out, UnaryOperators);
+            return b && !checkLastType(out, BinaryOperators) && !checkLastType(out, UnaryOperators) && !checkLastType(out, Brackets.Open);
         },
         canBeAddAsOpenBracket: function(out, key) {
             var b = Brackets.Open.check(key);
@@ -119,7 +119,7 @@ const RulesAddingToExpression = (function() {
             if (out.length == 0) {
                 return false;
             }
-            return b && (checkLastType(out, Digits) || checkLastType(out, Brackets)) && Expression.getCurrentLevel() > 0;
+            return b && (checkLastType(out, Digits) || checkLastType(out, Brackets.Close)) && Expression.getCurrentLevel() > 0;
         },
     }
 })();
@@ -188,7 +188,7 @@ const Expression = (function() {
         var arithLevel2 = [];
         var currArithLevel2 = 0;
         for (var i = 0; i < out.length; i++) {
-            if (out[i].type != Brackets) {
+            if (out[i].type != Brackets.Open && out[i].type != Brackets.Close) {
                 out2.push(out[i]);
                 arithLevel2.push(currArithLevel2);
             } else {
@@ -222,12 +222,12 @@ const Expression = (function() {
                 add(BinaryOperators, BinaryOperators[key]);
             } else if (RulesAddingToExpression.canBeAddAsOpenBracket(out, key)) {
                 currArithLevel = currArithLevel + 1;
-                add(Brackets, Brackets.Open);
+                add(Brackets.Open, Brackets.Open);
             } else if (RulesAddingToExpression.canBeAddAsCloseBracket(out, key)) {
-                add(Brackets, Brackets.Close);
+                add(Brackets.Close, Brackets.Close);
                 currArithLevel = currArithLevel - 1;
             } else if (RulesAddingToExpression.canBeAddAsUnaryOperator(out, key)) {
-                 add(UnaryOperators, UnaryOperators[key]);
+                add(UnaryOperators, UnaryOperators[key]);
             } else if (RulesAddingToExpression.canBeUsedAsUnaryOperator(out, key)) {
                 var ind = out.length - 1;
                 out[ind].value = UnaryOperators[key](parseFloat(out[ind].value));
@@ -247,7 +247,7 @@ const Expression = (function() {
             if (out.length == 0) {
                 return true;
             }
-            return (checkLastType(out, Digits) || checkLastType(out, Brackets));
+            return (checkLastType(out, Digits) || checkLastType(out, Brackets.Close));
         },
         evaluate: function() {
             replaceBracketsToOrder();
@@ -269,16 +269,19 @@ const Expression = (function() {
                     break;
                 }
             }
-            out[0].value = (out[0].value).toString();
-
+            var res=0;
+            if (out.length > 0) {
+                out[0].value = (out[0].value).toString();
+                res=out[0].value
+            }
             currArithLevel = 0;
-            return out[0].value;
+            return res;
         },
         remove: function() {
             var lastObj = out[out.length - 1]
             if (lastObj.type == Digits) {
                 out[out.length - 1].value = lastObj.value.slice(0, lastObj.value.length - 1);
-            } else if ([UnaryOperators, BinaryOperators, Brackets].indexOf(lastObj.type)) {
+            } else if ([UnaryOperators, BinaryOperators, Brackets.Open, Brackets.Close].indexOf(lastObj.type)) {
                 out = out.slice(0, out.length - 1);
                 arithLevel = arithLevel.slice(0, arithLevel.length - 1);
             }
