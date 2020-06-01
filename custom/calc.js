@@ -59,10 +59,9 @@ const Calculator = (function() {
                 var was_key_added = Expression.add(key);
                 if (was_key_added) {
                     key_in = inverseTranslateSymbol(key_in)
-                    document.getElementById(id).value += (key_in).toString();
+                    document.getElementById(id).value = document.getElementById(id).value+(key_in).toString();
 
                     var elem = document.getElementById(id);
-                    elem.focus();
                     elem.scrollLeft = elem.scrollWidth;
 
                     highlightViewer('highlight-correct-input', 250);
