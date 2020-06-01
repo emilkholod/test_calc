@@ -1,0 +1,27 @@
+body {
+    /* background-color: green; */
+}
+
+.container {
+    /* background-color: green; */
+}
+
+.row {
+    text-align: center;
+    padding-top: 5px;
+}
+
+.col-3, .col-6{
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+.btn-math-operations {
+    background-color: orange;
+}
+
+.expression_viewer {
+    width: 100%;
+    font-size: 40px;
+    /* direction: : rtl; */
+}
