@@ -21,7 +21,7 @@ body {
 }
 
 .expression_viewer {
-    margin-top: 5px;
+    padding-top: 30px;
     width: 100%;
     font-size: 40px;
     /* direction: : rtl; */
@@ -43,4 +43,8 @@ body {
 .expression_viewer.highlight-evaluted {
     border-color: lightgreen;
     box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.075) inset, 0px 0px 8px lightgreen;
+}
+
+.header {
+    height: 30px;
 }
