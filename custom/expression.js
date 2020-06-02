@@ -4,7 +4,7 @@ const Digits = (function Digits() {
     return {
         name: "Digits",
         check: function(key) {
-            var regexp = /^[0-9]$/g;
+            var regexp = /^[0-9.]$/g;
             return regexp.test(key);
         }
     }
@@ -17,8 +17,12 @@ const Consts = (function Consts() {
         check: function(key) {
             return consts.indexOf(key) != -1;
         },
-        pi: Math.PI,
-        e: Math.E,
+        pi: function() {
+            return Math.PI;
+        },
+        e: function() {
+            return Math.E;
+        },
     }
 })();
 
@@ -154,7 +158,7 @@ const RulesAddingToExpression = (function() {
             if (out.length == 0) {
                 return b;
             }
-            return b && !checkLastType(out, Digits) && !checkLastType(out, Brackets.Close);
+            return b && !checkLastType(out, Digits) && !checkLastType(out, Brackets.Close) && !checkLastType(out, Consts);
         }
     }
 })();
@@ -196,7 +200,7 @@ const Expression = (function() {
     function evaluateConsts(ind, curr_value) {
         while (arithLevel[ind] == curr_value) {
             if (Consts.check(out[ind].value.name)) {
-                out[ind].value = out[ind].value;
+                out[ind].value = out[ind].value();
                 out[ind].type = Digits;
             }
             ind = ind + 1;
@@ -248,6 +252,41 @@ const Expression = (function() {
         arithLevel = arithLevel2;
     }
 
+    function inverseTranslateSymbol(key) {
+        switch (key) {
+            case 'sum':
+                return '+';
+            case 'minus':
+                return '-';
+            case 'multiply':
+                return '*';
+            case 'divide':
+                return '/';
+            case 'sqrt':
+                return '√';
+            case 'inverse_x':
+                return '1/';
+            case 'pi':
+                return 'π';
+            case 'OpenBracket':
+                return '(';
+            case 'CloseBracket':
+                return ')';
+            default:
+                return key;
+        }
+    }
+
+    function filterView(val_in) {
+        var res = val_in;
+        if (Math.abs(val_in) < 1e-14) {
+            res = '0';
+        } else if (Math.abs(val_in) >= 16331239353195370) {
+            res = 'Infinity';
+        }
+        return res;
+    }
+
 
     return {
         init: function() {
@@ -261,7 +300,12 @@ const Expression = (function() {
                 if ((out.length == 0) || (out[out.length - 1].type != Digits)) {
                     add(Digits, key);
                 } else if (out[out.length - 1].type == Digits) {
-                    appendToPreviousNumber(key);
+                    if (key != '.' || (key === '.' && out[out.length - 1].value.indexOf('.') == -1)) {
+                        appendToPreviousNumber(key);
+                    } else {
+                        console.log('Запятая уже поставлена', key);
+                        was_key_added = false;
+                    }
                 }
             } else if (RulesAddingToExpression.canBeAddAsBinaryOperator(out, key)) {
                 add(BinaryOperators, BinaryOperators[key]);
@@ -273,7 +317,13 @@ const Expression = (function() {
                 currArithLevel = currArithLevel - 1;
             } else if (RulesAddingToExpression.canBeUsedAsUnaryOperator(out, key)) {
                 var ind = out.length - 1;
-                out[ind].value = UnaryOperators[key](parseFloat(out[ind].value));
+                var res = out[ind].value;
+                if (out[ind].type == Consts) {
+                    res = out[ind].value();
+                }
+                out[ind].value = UnaryOperators[key](parseFloat(res));
+                out[ind].value = filterView(out[ind].value)
+                out[ind].type = Digits;
             } else if (RulesAddingToExpression.canBeAddAsUnaryOperator(out, key)) {
                 add(UnaryOperators, UnaryOperators[key]);
             } else if (RulesAddingToExpression.canBeAddAsConst(out, key)) {
@@ -319,12 +369,8 @@ const Expression = (function() {
             }
             var res = 0;
             if (out.length > 0) {
-                if (Math.abs(out[0].value) < 1e-14) {
-                    out[0].value = 0;
-                } else if (Math.abs(out[0].value) >= 16331239353195370) {
-                    out[0].value = 'Infinity';
-                }
-                out[0].value = (out[0].value).toString();
+                out[0].value = filterView(out[0].value)
+                out[0].value = (parseFloat(out[0].value)).toString();
                 res = out[0].value
             }
             currArithLevel = 0;
@@ -334,10 +380,25 @@ const Expression = (function() {
             var lastObj = out[out.length - 1]
             if (lastObj.type == Digits) {
                 out[out.length - 1].value = lastObj.value.slice(0, lastObj.value.length - 1);
-            } else if ([UnaryOperators, BinaryOperators, Brackets.Open, Brackets.Close].indexOf(lastObj.type)) {
+                if (out[out.length - 1].value.length == 0) {
+                    out = out.slice(0, out.length - 1);
+                    arithLevel = arithLevel.slice(0, arithLevel.length - 1);
+                }
+            } else if ([UnaryOperators, BinaryOperators, Brackets.Open, Brackets.Close, Consts].indexOf(lastObj.type) != -1) {
                 out = out.slice(0, out.length - 1);
                 arithLevel = arithLevel.slice(0, arithLevel.length - 1);
             }
+        },
+        render: function() {
+            var res = ''
+            for (var i = 0, l = out.length; i < l; i++) {
+                if (out[i].type == Digits) {
+                    res += inverseTranslateSymbol(out[i].value);
+                } else {
+                    res += inverseTranslateSymbol(out[i].value.name);
+                }
+            }
+            return res;
         }
     }
 })();

@@ -25,18 +25,7 @@ const Calculator = (function() {
         }
     }
 
-    function inverseTranslateSymbol(key) {
-        switch (key) {
-            case 'sqrt':
-                return '√';
-            case 'inverse_x':
-                return '1/';
-            case 'pi':
-                return 'π';
-            default:
-                return key;
-        }
-    }
+
 
     function hideTrigElements(trig){
         for (var i=0, l=trig.length; i<l; i++) {
@@ -71,14 +60,13 @@ const Calculator = (function() {
                 highlightViewer('highlight-correct-input', 250);
             } else if (key === 'remove' || key == 'Backspace') {
                 Expression.remove();
-                var len = document.getElementById(id).value.length;
-                document.getElementById(id).value = document.getElementById(id).value.slice(0, len - 1);
+                document.getElementById(id).value = Expression.render();
                 highlightViewer('highlight-correct-input', 250);
             } else {
                 var was_key_added = Expression.add(key);
                 if (was_key_added) {
-                    key_in = inverseTranslateSymbol(key_in)
-                    document.getElementById(id).value = document.getElementById(id).value+(key_in).toString();
+                    // key_in = inverseTranslateSymbol(key_in)
+                    document.getElementById(id).value = Expression.render();
 
                     var elem = document.getElementById(id);
                     elem.scrollLeft = elem.scrollWidth;
