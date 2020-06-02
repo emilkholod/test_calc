@@ -60,6 +60,7 @@
     display: block;
 }
 
-.carousel-item {
-    min-height: 100vh;
+#history {
+    height: 85vh;
+    overflow-y: scroll;
 }

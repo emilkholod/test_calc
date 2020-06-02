@@ -56,7 +56,7 @@ const UnaryOperators = (function() {
             return operators.indexOf(key) != -1;
         },
         sqrt: function(x) {
-            return x ** 0.5;
+            return Math.sqrt(x);
         },
         inverse_x: function(x) {
             return 1 / x;
@@ -123,7 +123,7 @@ const RulesAddingToExpression = (function() {
             if (out.length == 0) {
                 return b;
             }
-            return b && !checkLastType(out, Digits) && !checkLastType(out, UnaryOperators);
+            return b && !checkLastType(out, Digits) && !checkLastType(out, UnaryOperators) && !checkLastType(out, Brackets.Close);
         },
         canBeUsedAsUnaryOperator: function(out, key) {
             var b = UnaryOperators.check(key);
@@ -144,7 +144,7 @@ const RulesAddingToExpression = (function() {
             if (out.length == 0) {
                 return b;
             }
-            return b && !checkLastType(out, Digits);
+            return b && !checkLastType(out, Digits) && !checkLastType(out, Consts);
         },
         canBeAddAsCloseBracket: function(out, key) {
             var b = Brackets.Close.check(key);
@@ -316,14 +316,13 @@ const Expression = (function() {
                 add(Brackets.Close, Brackets.Close);
                 currArithLevel = currArithLevel - 1;
             } else if (RulesAddingToExpression.canBeUsedAsUnaryOperator(out, key)) {
-                var ind = out.length - 1;
-                var res = out[ind].value;
-                if (out[ind].type == Consts) {
-                    res = out[ind].value();
-                }
-                out[ind].value = UnaryOperators[key](parseFloat(res));
-                out[ind].value = filterView(out[ind].value)
-                out[ind].type = Digits;
+                var lastObj=out.pop();
+                add(UnaryOperators, UnaryOperators[key]);
+                currArithLevel = currArithLevel + 1;
+                add(Brackets.Open, Brackets.Open);
+                add(lastObj.type, lastObj.value);
+                add(Brackets.Close, Brackets.Close);
+                currArithLevel = currArithLevel - 1;
             } else if (RulesAddingToExpression.canBeAddAsUnaryOperator(out, key)) {
                 add(UnaryOperators, UnaryOperators[key]);
             } else if (RulesAddingToExpression.canBeAddAsConst(out, key)) {

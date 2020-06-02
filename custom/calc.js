@@ -111,6 +111,7 @@ const Calculator = (function() {
             }
             is_active_inverse_trig = !is_active_inverse_trig;
         },
+        saveToHistory2: saveToHistory,
     }
 })();
 Calculator.init();

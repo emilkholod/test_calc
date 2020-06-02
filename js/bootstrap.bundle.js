@@ -696,7 +696,9 @@
       this._isSliding = false;
       this.touchTimeout = null;
       this.touchStartX = 0;
+      this.touchStartY = 0;
       this.touchDeltaX = 0;
+      this.touchDeltaY = 0;
       this._config = this._getConfig(config);
       this._element = element;
       this._indicatorsElement = this._element.querySelector(SELECTOR_INDICATORS);
@@ -810,6 +812,9 @@
 
     _proto._handleSwipe = function _handleSwipe() {
       var absDeltax = Math.abs(this.touchDeltaX);
+      var absDeltay = Math.abs(this.touchDeltaY);
+
+      if (absDeltax/2 < absDeltay) return;
 
       if (absDeltax <= SWIPE_THRESHOLD) {
         return;
@@ -860,8 +865,10 @@
       var start = function start(event) {
         if (_this3._pointerEvent && PointerType[event.originalEvent.pointerType.toUpperCase()]) {
           _this3.touchStartX = event.originalEvent.clientX;
+          _this3.touchStartY = event.originalEvent.clientY;
         } else if (!_this3._pointerEvent) {
           _this3.touchStartX = event.originalEvent.touches[0].clientX;
+          _this3.touchStartY = event.originalEvent.touches[0].clientY;
         }
       };
 
@@ -869,14 +876,17 @@
         // ensure swiping with one touch and not pinching
         if (event.originalEvent.touches && event.originalEvent.touches.length > 1) {
           _this3.touchDeltaX = 0;
+          _this3.touchDeltaY = 0;
         } else {
           _this3.touchDeltaX = event.originalEvent.touches[0].clientX - _this3.touchStartX;
+          _this3.touchDeltaY = event.originalEvent.touches[0].clientY - _this3.touchStartY;
         }
       };
 
       var end = function end(event) {
         if (_this3._pointerEvent && PointerType[event.originalEvent.pointerType.toUpperCase()]) {
           _this3.touchDeltaX = event.originalEvent.clientX - _this3.touchStartX;
+          _this3.touchDeltaY = event.originalEvent.clientY - _this3.touchStartY;
         }
 
         _this3._handleSwipe();
