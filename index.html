@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
     <!-- <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">  -->
     <link rel="stylesheet" type="text/css" href="custom/custom.css">
-    <title>Hello, world!</title>
+    <title>Calculator | By emkh</title>
 </head>
 
 <body>
@@ -49,11 +49,11 @@
                 <button class="btn btn-primary btn-block btn-math-operations" value='/'>/</button>
             </div>
             <div class="d-none d-sm-block col-sm-2">
-                <input class="btn btn-primary btn-block btn-math-operations" type="button" value="sin">
+                <input class="btn btn-primary btn-block btn-math-operations trig" type="button" value="sin">
+                <input class="btn btn-primary btn-block btn-math-operations inverse_trig" type="button" value="arcsin">
             </div>
             <div class="d-none d-sm-block col-sm-2">
-                <button class="btn btn-primary btn-block btn-math-operations" value='inverse_x'>1/x</button>
-                <!-- <input class="btn btn-primary btn-block btn-math-operations" type="button" value="1/x"> -->
+                <input class="btn btn-primary btn-block btn-math-operations" type="button" value="Inv">
             </div>
         </div>
         <div class="row">
@@ -70,10 +70,11 @@
                 <button class="btn btn-primary btn-block btn-math-operations" value='*'>*</button>
             </div>
             <div class="d-none d-sm-block col-sm-2">
-                <input class="btn btn-primary btn-block btn-math-operations" type="button" value="cos">
+                <input class="btn btn-primary btn-block btn-math-operations trig" type="button" value="cos">
+                <input class="btn btn-primary btn-block btn-math-operations inverse_trig" type="button" value="arccos">
             </div>
             <div class="d-none d-sm-block col-sm-2">
-                <input class="btn btn-primary btn-block btn-math-operations" type="button" value="None">
+                <button class="btn btn-primary btn-block btn-math-operations" value='inverse_x'>1/x</button>
             </div>
         </div>
         <div class="row">
@@ -90,7 +91,8 @@
                 <button class="btn btn-primary btn-block btn-math-operations" value='-'>-</button>
             </div>
             <div class="d-none d-sm-block col-sm-2">
-                <input class="btn btn-primary btn-block btn-math-operations" type="button" value="tg">
+                <input class="btn btn-primary btn-block btn-math-operations trig" type="button" value="tg">
+                <input class="btn btn-primary btn-block btn-math-operations inverse_trig" type="button" value="arctg">
             </div>
             <div class="d-none d-sm-block col-sm-2">
                 <input class="btn btn-primary btn-block btn-math-operations" type="button" value="None">
@@ -110,10 +112,11 @@
                 <button class="btn btn-primary btn-block btn-math-operations" value='+'>+</button>
             </div>
             <div class="d-none d-sm-block col-sm-2">
-                <input class="btn btn-primary btn-block btn-math-operations" type="button" value="ctg">
+                <input class="btn btn-primary btn-block btn-math-operations trig" type="button" value="ctg">
+                <input class="btn btn-primary btn-block btn-math-operations inverse_trig" type="button" value="arcctg">
             </div>
             <div class="d-none d-sm-block col-sm-2">
-                <input class="btn btn-primary btn-block btn-math-operations" type="button" value="None">
+                <button class="btn btn-primary btn-block btn-math-operations" value='pi'>π</button>
             </div>
         </div>
         <div class="row">
@@ -127,10 +130,13 @@
                 <input class="btn btn-primary btn-block btn-math-operations" type="button" value="=">
             </div>
             <div class="d-none d-sm-block col-sm-2">
-                <input class="btn btn-primary btn-block btn-math-operations" type="button" value="None">
+                <input class="btn btn-primary btn-block btn-math-operations" type="button" value="e">
             </div>
         </div>
-        <div class="footer"> </div>
+        <div class="row">
+            <div class="footer d-sm-none col-12"> Rotate to horizontal position for more functionality</div>
+            <div class="footer d-none d-sm-block col-12"> Rotate to vertical position to hide more functionality</div>
+        </div>
     </div>
     <script src="custom/expression.js"></script>
     <script src="custom/calc.js"></script>

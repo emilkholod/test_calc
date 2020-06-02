@@ -10,6 +10,18 @@ const Digits = (function Digits() {
     }
 })();
 
+const Consts = (function Consts() {
+    var consts = ['pi', 'e'];
+    return {
+        name: "Consts",
+        check: function(key) {
+            return consts.indexOf(key) != -1;
+        },
+        pi: Math.PI,
+        e: Math.E,
+    }
+})();
+
 const BinaryOperators = (function BinaryOperators() {
     var operators = ['sum', 'minus', 'multiply', 'divide'];
     return {
@@ -33,7 +45,7 @@ const BinaryOperators = (function BinaryOperators() {
 })();
 
 const UnaryOperators = (function() {
-    var operators = ['sqrt', 'inverse_x', 'sin', 'cos', 'tg', 'ctg'];
+    var operators = ['sqrt', 'inverse_x', 'sin', 'cos', 'tg', 'ctg', 'arcsin', 'arccos', 'arctg', 'arcctg'];
     return {
         name: 'UnaryOperators',
         check: function(key) {
@@ -56,6 +68,18 @@ const UnaryOperators = (function() {
         },
         ctg: function(x) {
             return 1 / Math.tan(x);
+        },
+        arcsin: function(x) {
+            return Math.asin(x);
+        },
+        arccos: function(x) {
+            return Math.acos(x);
+        },
+        arctg: function(x) {
+            return Math.atan(x);
+        },
+        arcctg: function(x) {
+            return Math.PI / 2 - Math.atan(x);
         },
     }
 })();
@@ -84,7 +108,11 @@ const RulesAddingToExpression = (function() {
     }
     return {
         canBeAddAsDigit: function(out, key) {
-            return Digits.check(key);
+            var b = Digits.check(key);
+            if (out.length == 0) {
+                return b;
+            }
+            return b && !checkLastType(out, Brackets.Close) && !checkLastType(out, Consts);
         },
         canBeAddAsUnaryOperator: function(out, key) {
             var b = UnaryOperators.check(key);
@@ -96,9 +124,9 @@ const RulesAddingToExpression = (function() {
         canBeUsedAsUnaryOperator: function(out, key) {
             var b = UnaryOperators.check(key);
             if (out.length == 0) {
-                return b;
+                return false;
             }
-            return b && checkLastType(out, Digits);
+            return b && (checkLastType(out, Digits) || checkLastType(out, Consts));
         },
         canBeAddAsBinaryOperator: function(out, key) {
             var b = BinaryOperators.check(key);
@@ -119,8 +147,15 @@ const RulesAddingToExpression = (function() {
             if (out.length == 0) {
                 return false;
             }
-            return b && (checkLastType(out, Digits) || checkLastType(out, Brackets.Close)) && Expression.getCurrentLevel() > 0;
+            return b && (checkLastType(out, Digits) || checkLastType(out, Brackets.Close) || checkLastType(out, Consts)) && Expression.getCurrentLevel() > 0;
         },
+        canBeAddAsConst: function(out, key) {
+            var b = Consts.check(key);
+            if (out.length == 0) {
+                return b;
+            }
+            return b && !checkLastType(out, Digits) && !checkLastType(out, Brackets.Close);
+        }
     }
 })();
 
@@ -156,6 +191,16 @@ const Expression = (function() {
         out = removeIndex(out, ind);
         out = removeIndex(out, ind);
         return out
+    }
+
+    function evaluateConsts(ind, curr_value) {
+        while (arithLevel[ind] == curr_value) {
+            if (Consts.check(out[ind].value.name)) {
+                out[ind].value = out[ind].value;
+                out[ind].type = Digits;
+            }
+            ind = ind + 1;
+        }
     }
 
     function evaluateUnaryOperators(ind, curr_value) {
@@ -226,11 +271,13 @@ const Expression = (function() {
             } else if (RulesAddingToExpression.canBeAddAsCloseBracket(out, key)) {
                 add(Brackets.Close, Brackets.Close);
                 currArithLevel = currArithLevel - 1;
-            } else if (RulesAddingToExpression.canBeAddAsUnaryOperator(out, key)) {
-                add(UnaryOperators, UnaryOperators[key]);
             } else if (RulesAddingToExpression.canBeUsedAsUnaryOperator(out, key)) {
                 var ind = out.length - 1;
                 out[ind].value = UnaryOperators[key](parseFloat(out[ind].value));
+            } else if (RulesAddingToExpression.canBeAddAsUnaryOperator(out, key)) {
+                add(UnaryOperators, UnaryOperators[key]);
+            } else if (RulesAddingToExpression.canBeAddAsConst(out, key)) {
+                add(Consts, Consts[key]);
             } else {
                 console.log('Символ не подходит по правилам', key);
                 was_key_added = false;
@@ -247,7 +294,7 @@ const Expression = (function() {
             if (out.length == 0) {
                 return true;
             }
-            return (checkLastType(out, Digits) || checkLastType(out, Brackets.Close));
+            return (checkLastType(out, Digits) || checkLastType(out, Brackets.Close) || checkLastType(out, Consts));
         },
         evaluate: function() {
             replaceBracketsToOrder();
@@ -260,6 +307,7 @@ const Expression = (function() {
                 if (isLevelConsistsOfOneNumber) {
                     arithLevel[curr_ind] = curr_value - 1;
                 } else if (out.length > 0) {
+                    evaluateConsts(curr_ind, curr_value);
                     evaluateUnaryOperators(curr_ind, curr_value);
                     evaluateBinaryOperators(curr_ind, curr_value, [BinaryOperators.multiply.name, BinaryOperators.divide.name]);
                     evaluateBinaryOperators(curr_ind, curr_value, [BinaryOperators.sum.name, BinaryOperators.minus.name]);
@@ -269,10 +317,15 @@ const Expression = (function() {
                     break;
                 }
             }
-            var res=0;
+            var res = 0;
             if (out.length > 0) {
+                if (Math.abs(out[0].value) < 1e-14) {
+                    out[0].value = 0;
+                } else if (Math.abs(out[0].value) >= 16331239353195370) {
+                    out[0].value = 'Infinity';
+                }
                 out[0].value = (out[0].value).toString();
-                res=out[0].value
+                res = out[0].value
             }
             currArithLevel = 0;
             return res;

@@ -1,5 +1,7 @@
 const Calculator = (function() {
     var id = 'expression_viewer';
+    var is_active_inverse_trig=false;
+
 
     function highlightViewer(cls, timeout) {
         $('#expression_viewer').addClass(cls);
@@ -29,8 +31,23 @@ const Calculator = (function() {
                 return '√';
             case 'inverse_x':
                 return '1/';
+            case 'pi':
+                return 'π';
             default:
                 return key;
+        }
+    }
+
+    function hideTrigElements(trig){
+        for (var i=0, l=trig.length; i<l; i++) {
+            trig[i].style.display = "none";
+        }
+    }
+
+    function showTrigElements(trig){
+        for (var i=0, l=trig.length; i<l; i++) {
+            trig[i].style.display = "block";
+            trig[i].style.marginTop = "0px !important";
         }
     }
 
@@ -38,7 +55,7 @@ const Calculator = (function() {
         init: function() {
             Expression.init();
         },
-        update: function(key_in) {
+        updateExpressionViewer: function(key_in) {
             var key = translateSymbol(key_in)
             if (key === '=' || key == 'Enter') {
                 var canBeEvaluate = Expression.canBeEvaluate()
@@ -51,10 +68,12 @@ const Calculator = (function() {
             } else if (key === 'clear' || key == 'Escape') {
                 Expression.init();
                 document.getElementById(id).value = '';
+                highlightViewer('highlight-correct-input', 250);
             } else if (key === 'remove' || key == 'Backspace') {
                 Expression.remove();
                 var len = document.getElementById(id).value.length;
                 document.getElementById(id).value = document.getElementById(id).value.slice(0, len - 1);
+                highlightViewer('highlight-correct-input', 250);
             } else {
                 var was_key_added = Expression.add(key);
                 if (was_key_added) {
@@ -72,6 +91,18 @@ const Calculator = (function() {
                 }
             }
         },
+        inverseTrigFunctions: function() {
+            var trig = document.getElementsByClassName("trig");
+            var inversed = document.getElementsByClassName("inverse_trig");
+            if (is_active_inverse_trig) {
+                hideTrigElements(inversed)
+                showTrigElements(trig)
+            } else {
+                hideTrigElements(trig)
+                showTrigElements(inversed)
+            }
+            is_active_inverse_trig=!is_active_inverse_trig;
+        }
     }
 })();
 Calculator.init();

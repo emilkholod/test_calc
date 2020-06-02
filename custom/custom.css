@@ -29,7 +29,6 @@ body {
 .expression_viewer {
     width: 100%;
     font-size: 30px;
-    /* direction: rtl; */
     text-align: right;
     outline: none;
     box-shadow: none;
@@ -38,23 +37,30 @@ body {
 
 .expression_viewer.highlight-error {
     border-color: red;
-    box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.075) inset, 0px 0px 8px red;
+    box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.075) inset, 0px 0px 10px red;
 }
 
 .expression_viewer.highlight-correct-input {
     border-color: lightblue;
-    box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.075) inset, 0px 0px 8px lightblue;
+    box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.075) inset, 0px 0px 10px lightblue;
 }
 
 .expression_viewer.highlight-evaluted {
     border-color: lightgreen;
-    box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.075) inset, 0px 0px 8px lightgreen;
+    box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.075) inset, 0px 0px 10px lightgreen;
 }
 
 /* .header {
     height: 60px;
+}*/
+.footer {
+    text-align: center;
 }
 
-.footer {
-    height: 60px;
-} */
+.inverse_trig {
+    display: none;
+    margin-top: 0px !important;
+}
+.trig {
+    display: block;
+}
