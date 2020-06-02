@@ -1,6 +1,6 @@
 const Calculator = (function() {
     var id = 'expression_viewer';
-    var is_active_inverse_trig=false;
+    var is_active_inverse_trig = false;
 
 
     function highlightViewer(cls, timeout) {
@@ -27,17 +27,34 @@ const Calculator = (function() {
 
 
 
-    function hideTrigElements(trig){
-        for (var i=0, l=trig.length; i<l; i++) {
+    function hideTrigElements(trig) {
+        for (var i = 0, l = trig.length; i < l; i++) {
             trig[i].style.display = "none";
         }
     }
 
-    function showTrigElements(trig){
-        for (var i=0, l=trig.length; i<l; i++) {
+    function showTrigElements(trig) {
+        for (var i = 0, l = trig.length; i < l; i++) {
             trig[i].style.display = "block";
             trig[i].style.marginTop = "0px !important";
         }
+    }
+
+    function insertAfter(referenceNode, newNode) {
+        referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
+    }
+
+    function saveToHistory(expression) {
+        var el = document.createElement("div");
+        el.className = 'row'
+        var div = document.getElementById("history");
+        div.append(el)
+        var el2 = document.createElement("input");
+        el2.value = expression
+        el2.type = "text"
+        el2.readOnly = "readonly"
+        el2.className = "form-control"
+        el.append(el2)
     }
 
     return {
@@ -47,9 +64,13 @@ const Calculator = (function() {
         updateExpressionViewer: function(key_in) {
             var key = translateSymbol(key_in)
             if (key === '=' || key == 'Enter') {
-                var canBeEvaluate = Expression.canBeEvaluate()
+                var canBeEvaluate = Expression.canBeEvaluate();
                 if (canBeEvaluate) {
-                    document.getElementById(id).value = Expression.evaluate();
+                    var expression_to_save=document.getElementById(id).value;
+                    var evaluted = Expression.evaluate();
+                    expression_to_save+=' = '+ evaluted;
+                    saveToHistory(expression_to_save);
+                    document.getElementById(id).value = evaluted;
                     highlightViewer('highlight-evaluted', 500);
                 } else {
                     highlightViewer('highlight-error', 250);
@@ -72,7 +93,6 @@ const Calculator = (function() {
                     elem.scrollLeft = elem.scrollWidth;
 
                     highlightViewer('highlight-correct-input', 250);
-
                 } else {
                     console.log('Символ ', key, ' не добавлен в выражение');
                     highlightViewer('highlight-error', 250);
@@ -89,8 +109,8 @@ const Calculator = (function() {
                 hideTrigElements(trig)
                 showTrigElements(inversed)
             }
-            is_active_inverse_trig=!is_active_inverse_trig;
-        }
+            is_active_inverse_trig = !is_active_inverse_trig;
+        },
     }
 })();
 Calculator.init();

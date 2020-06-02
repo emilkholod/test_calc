@@ -1,19 +1,16 @@
-body {
-    /* background-color: green; */
-}
-
 .container {
     position: fixed;
-    top: 50%;
+    top: 0%;
     left: 50%;
-    /* bring your own prefixes */
-    transform: translate(-50%, -50%);
+    transform: translate(-50%, -0%);
     touch-action: manipulation;
 }
 
 .row {
     text-align: center;
     padding-top: 5px;
+    margin-left: 0px;
+    margin-right: 0px;
 }
 
 .col-sm-2, .col-3, .col-6, .col-12 {
@@ -37,22 +34,19 @@ body {
 
 .expression_viewer.highlight-error {
     border-color: red;
-    box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.075) inset, 0px 0px 10px red;
+    box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.075) inset, 0px 0px 20px red;
 }
 
 .expression_viewer.highlight-correct-input {
     border-color: lightblue;
-    box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.075) inset, 0px 0px 10px lightblue;
+    box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.075) inset, 0px 0px 20px lightblue;
 }
 
 .expression_viewer.highlight-evaluted {
     border-color: lightgreen;
-    box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.075) inset, 0px 0px 10px lightgreen;
+    box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.075) inset, 0px 0px 20px lightgreen;
 }
 
-/* .header {
-    height: 60px;
-}*/
 .footer {
     text-align: center;
 }
@@ -61,6 +55,11 @@ body {
     display: none;
     margin-top: 0px !important;
 }
+
 .trig {
     display: block;
+}
+
+.carousel-item {
+    min-height: 100vh;
 }
