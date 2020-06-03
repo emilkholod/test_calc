@@ -1,5 +1,3 @@
-"use strict";
-
 const Digits = (function Digits() {
     return {
         name: "Digits",
@@ -199,8 +197,8 @@ const Expression = (function() {
 
     function evaluateConsts(ind, curr_value) {
         while (arithLevel[ind] == curr_value) {
-            if (Consts.check(out[ind].value.name)) {
-                out[ind].value = out[ind].value();
+            if (Consts.check(out[ind].value)) {
+                out[ind].value = out[ind].type[out[ind].value]();
                 out[ind].type = Digits;
             }
             ind = ind + 1;
@@ -209,8 +207,8 @@ const Expression = (function() {
 
     function evaluateUnaryOperators(ind, curr_value) {
         while (arithLevel[ind] == curr_value) {
-            if (UnaryOperators.check(out[ind].value.name)) {
-                out[ind].value = out[ind].value(parseFloat(out[ind + 1].value));
+            if (UnaryOperators.check(out[ind].value)) {
+                out[ind].value = out[ind].type[out[ind].value](parseFloat(out[ind + 1].value));
                 out[ind].type = Digits;
                 out = removeIndex(out, ind + 1);
                 arithLevel = removeIndex(arithLevel, ind + 1);
@@ -222,8 +220,8 @@ const Expression = (function() {
 
     function evaluateBinaryOperators(ind, curr_value, arr_of_operators_names) {
         while (arithLevel[ind] == curr_value) {
-            if (arr_of_operators_names.indexOf(out[ind].value.name) != -1) {
-                out[ind - 1].value = out[ind].value(parseFloat(out[ind - 1].value), parseFloat(out[ind + 1].value));
+            if (arr_of_operators_names.indexOf(out[ind].value) != -1) {
+                out[ind - 1].value = out[ind].type[out[ind].value](parseFloat(out[ind - 1].value), parseFloat(out[ind + 1].value));
                 out = removeEvaluatedInd(out, ind);
                 arithLevel = removeEvaluatedInd(arithLevel, ind);
                 ind = ind - 2;
@@ -241,9 +239,9 @@ const Expression = (function() {
                 out2.push(out[i]);
                 arithLevel2.push(currArithLevel2);
             } else {
-                if (out[i].value == Brackets.Open) {
+                if (out[i].value == '(') {
                     currArithLevel2 = currArithLevel2 + 1
-                } else if (out[i].value == Brackets.Close) {
+                } else if (out[i].value == ')') {
                     currArithLevel2 = currArithLevel2 - 1
                 }
             }
@@ -308,25 +306,25 @@ const Expression = (function() {
                     }
                 }
             } else if (RulesAddingToExpression.canBeAddAsBinaryOperator(out, key)) {
-                add(BinaryOperators, BinaryOperators[key]);
+                add(BinaryOperators, key);
             } else if (RulesAddingToExpression.canBeAddAsOpenBracket(out, key)) {
                 currArithLevel = currArithLevel + 1;
-                add(Brackets.Open, Brackets.Open);
+                add(Brackets.Open, '(');
             } else if (RulesAddingToExpression.canBeAddAsCloseBracket(out, key)) {
-                add(Brackets.Close, Brackets.Close);
+                add(Brackets.Close, ')');
                 currArithLevel = currArithLevel - 1;
             } else if (RulesAddingToExpression.canBeUsedAsUnaryOperator(out, key)) {
                 var lastObj=out.pop();
-                add(UnaryOperators, UnaryOperators[key]);
+                add(UnaryOperators, key);
                 currArithLevel = currArithLevel + 1;
-                add(Brackets.Open, Brackets.Open);
+                add(Brackets.Open, '(');
                 add(lastObj.type, lastObj.value);
-                add(Brackets.Close, Brackets.Close);
+                add(Brackets.Close, ')');
                 currArithLevel = currArithLevel - 1;
             } else if (RulesAddingToExpression.canBeAddAsUnaryOperator(out, key)) {
-                add(UnaryOperators, UnaryOperators[key]);
+                add(UnaryOperators, key);
             } else if (RulesAddingToExpression.canBeAddAsConst(out, key)) {
-                add(Consts, Consts[key]);
+                add(Consts, key);
             } else {
                 console.log('Символ не подходит по правилам', key);
                 was_key_added = false;
@@ -354,12 +352,13 @@ const Expression = (function() {
                 var ind = curr_ind;
                 var isLevelConsistsOfOneNumber = (curr_value != arithLevel[curr_ind + 1]);
                 if (isLevelConsistsOfOneNumber) {
+                    evaluateConsts(curr_ind, curr_value);
                     arithLevel[curr_ind] = curr_value - 1;
                 } else if (out.length > 0) {
                     evaluateConsts(curr_ind, curr_value);
                     evaluateUnaryOperators(curr_ind, curr_value);
-                    evaluateBinaryOperators(curr_ind, curr_value, [BinaryOperators.multiply.name, BinaryOperators.divide.name]);
-                    evaluateBinaryOperators(curr_ind, curr_value, [BinaryOperators.sum.name, BinaryOperators.minus.name]);
+                    evaluateBinaryOperators(curr_ind, curr_value, ['multiply', 'divide']);
+                    evaluateBinaryOperators(curr_ind, curr_value, ['sum', 'minus']);
                 }
                 var max_level = Math.max.apply(Math, arithLevel);
                 if (out.length <= 1) {
@@ -391,11 +390,7 @@ const Expression = (function() {
         render: function() {
             var res = ''
             for (var i = 0, l = out.length; i < l; i++) {
-                if (out[i].type == Digits) {
-                    res += inverseTranslateSymbol(out[i].value);
-                } else {
-                    res += inverseTranslateSymbol(out[i].value.name);
-                }
+                res += inverseTranslateSymbol(out[i].value);
             }
             return res;
         }

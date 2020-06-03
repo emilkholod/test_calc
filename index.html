@@ -15,7 +15,7 @@
 <body>
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
     <script src="js/bootstrap.bundle.js"></script>
     <div class="wrapper container">
         <div id="carouselMain" class="carousel slide" data-ride="carousel" data-interval="false">
@@ -124,7 +124,7 @@
                     </div>
                     <div class="row">
                         <div class="col-6 col-sm-4">
-                            <input class="btn btn-primary btn-block" type="button" value="0">
+                            <input class="btn btn-primary btn-block" type="button" value="0" onclick="void(0)">
                         </div>
                         <div class="col-3 col-sm-2">
                             <input class="btn btn-primary btn-block" type="button" value=".">
@@ -138,18 +138,20 @@
                     </div>
                     <div class="row">
                         <div class="footer d-sm-none col-12"> Rotate to horizontal position for more functionality</div>
-                        <div class="footer d-none d-sm-block col-12"> Rotate to vertical position to hide more functionality</div>
+                        <div class="footer d-none d-sm-block d-md-none col-12"> Rotate to vertical position to hide more functionality</div>
+                        <div class="footer d-none d-sm-none d-md-block col-12"> Try to use mobile</div>
                         <div class="col-12">Swipe (left/right) to open history</div>
+                        <div class="col-12">V0.1.0</div>
                     </div>
                 </div>
                 <div class="carousel-item">
+                    <div class="row">
+                        <div class="col-12">Swipe (left/right) to open Calculator</div>
+                    </div>
+                    <div class="row">
+                        <input class="btn btn-primary btn-block" type="button" value="Calculator" onclick="$('.carousel').carousel(0)">
+                    </div>
                     <div id="history">
-                        <div class="row">
-                            <div class="col-12">Swipe (left/right) to open Calculator</div>
-                        </div>
-                        <div class="row">
-                            <input class="btn btn-primary btn-block" type="button" value="Calculator" onclick="$('.carousel').carousel(0)">
-                        </div>
                     </div>
                 </div>
 

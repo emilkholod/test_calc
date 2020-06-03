@@ -7,14 +7,16 @@ function buttonClick(event) {
     }
 }
 
-var elements = document.getElementsByClassName("btn");
-for (var i = 0; i < elements.length; i++) {
-    if (elements[i].addEventListener) {
-        elements[i].addEventListener('click', buttonClick, true);
-    } else if (elements[i].attachEvent) {
-        elements[i].attachEvent('onclick', buttonClick);
-    }
-}
+$(document).ready(function(){
+    $(".btn").on('click', function(){
+        var key = $(this).val();
+        if (key === 'Inv') {
+            Calculator.inverseTrigFunctions();
+        } else {
+            Calculator.updateExpressionViewer(key);
+        }
+    });
+});
 
 function handleKeyPressing(event) {
     var key = event.key;
@@ -26,7 +28,3 @@ function handleKeyPressing(event) {
     }
 }
 window.addEventListener("keydown", handleKeyPressing, true);
-
-// $("carouselMain").carousel({
-//   swipe: 50 // percent-per-second, default is 50. Pass false to disable swipe
-// });

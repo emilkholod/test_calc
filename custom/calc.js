@@ -12,14 +12,22 @@ const Calculator = (function() {
 
     function translateSymbol(key) {
         switch (key) {
+            case 'Add':
             case '+':
                 return 'sum';
+            case 'Subtract':
             case '-':
                 return 'minus';
+            case 'Multiply':
             case '*':
                 return 'multiply';
+            case 'Divide':
             case '/':
                 return 'divide';
+            case 'Decimal':
+                return '.';
+            case 'Esc':
+                return 'Escape';
             default:
                 return key;
         }
@@ -45,16 +53,18 @@ const Calculator = (function() {
     }
 
     function saveToHistory(expression) {
-        var el = document.createElement("div");
-        el.className = 'row'
+        var frag = document.createDocumentFragment(), el = document.createElement("div");
+        frag.appendChild(el);
+        frag.childNodes[0].className = 'row';
         var div = document.getElementById("history");
-        div.append(el)
-        var el2 = document.createElement("input");
-        el2.value = expression
-        el2.type = "text"
-        el2.readOnly = "readonly"
-        el2.className = "form-control"
-        el.append(el2)
+        div.insertBefore(el, div.firstChild);
+        var frag2 = document.createDocumentFragment(), el2 = document.createElement("input");
+        frag.appendChild(el2);
+        frag.childNodes[0].value = expression
+        frag.childNodes[0].type = "text"
+        frag.childNodes[0].readOnly = "readonly"
+        frag.childNodes[0].className = "form-control"
+        el.appendChild(el2)
     }
 
     return {
@@ -69,9 +79,9 @@ const Calculator = (function() {
                     var expression_to_save=document.getElementById(id).value;
                     var evaluted = Expression.evaluate();
                     expression_to_save+=' = '+ evaluted;
-                    saveToHistory(expression_to_save);
                     document.getElementById(id).value = evaluted;
                     highlightViewer('highlight-evaluted', 500);
+                    saveToHistory(expression_to_save);
                 } else {
                     highlightViewer('highlight-error', 250);
                 }
@@ -86,7 +96,6 @@ const Calculator = (function() {
             } else {
                 var was_key_added = Expression.add(key);
                 if (was_key_added) {
-                    // key_in = inverseTranslateSymbol(key_in)
                     document.getElementById(id).value = Expression.render();
 
                     var elem = document.getElementById(id);
