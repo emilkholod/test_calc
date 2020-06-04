@@ -281,6 +281,8 @@ const Expression = (function() {
             res = '0';
         } else if (Math.abs(val_in) >= 16331239353195370) {
             res = 'Infinity';
+        } else if (val_in <= -8165619676597685) {
+            res = '-Infinity';
         }
         return res;
     }
@@ -292,7 +294,7 @@ const Expression = (function() {
             arithLevel = [];
             currArithLevel = 0;
         },
-        add: function(key) {
+        append: function(key) {
             var was_key_added = true;
             if (RulesAddingToExpression.canBeAddAsDigit(out, key)) {
                 if ((out.length == 0) || (out[out.length - 1].type != Digits)) {
@@ -314,7 +316,7 @@ const Expression = (function() {
                 add(Brackets.Close, ')');
                 currArithLevel = currArithLevel - 1;
             } else if (RulesAddingToExpression.canBeUsedAsUnaryOperator(out, key)) {
-                var lastObj=out.pop();
+                var lastObj = out.pop();
                 add(UnaryOperators, key);
                 currArithLevel = currArithLevel + 1;
                 add(Brackets.Open, '(');
@@ -360,7 +362,7 @@ const Expression = (function() {
                     evaluateBinaryOperators(curr_ind, curr_value, ['multiply', 'divide']);
                     evaluateBinaryOperators(curr_ind, curr_value, ['sum', 'minus']);
                 }
-                var max_level = Math.max.apply(Math, arithLevel);
+                max_level = Math.max.apply(Math, arithLevel);
                 if (out.length <= 1) {
                     break;
                 }
